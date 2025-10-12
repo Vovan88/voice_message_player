@@ -14,7 +14,6 @@ import 'package:voice_message_package/src/widgets/play_pause_button.dart';
 class VoiceMessageView extends StatelessWidget {
   const VoiceMessageView(
       {Key? key,
-      required this.controller,
       this.backgroundColor = Colors.white,
       this.activeSliderColor = Colors.red,
       this.notActiveSliderColor,
@@ -55,7 +54,6 @@ class VoiceMessageView extends StatelessWidget {
       : super(key: key);
 
   /// The controller for the voice message view.
-  final VoiceController controller;
 
   /// The background color of the voice message view.
   final Color backgroundColor;
@@ -102,7 +100,7 @@ class VoiceMessageView extends StatelessWidget {
 
   /// The loading Color of the play/pause button.
   final Color playPauseButtonLoadingColor;
-  final ValueNotifier<VoiceController?> valueNotifierintiController;
+  final ValueNotifier<VoiceController> valueNotifierintiController;
 
   @override
 
@@ -119,20 +117,19 @@ class VoiceMessageView extends StatelessWidget {
       splashColor: Colors.transparent,
     );
 
-    return Container(
-      width: 160 + (controller.noiseCount * .72.w()),
-      padding: EdgeInsets.all(innerPadding),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(cornerRadius),
-      ),
-      child: ValueListenableBuilder<VoiceController?>(
-          valueListenable: valueNotifierintiController,
-          builder: (context, value, child) {
-            return ValueListenableBuilder(
+    return ValueListenableBuilder<VoiceController>(
+        valueListenable: valueNotifierintiController,
+        builder: (context, controller, child) {
+          return Container(
+            width: 160 + (controller.noiseCount * .72.w()),
+            padding: EdgeInsets.all(innerPadding),
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(cornerRadius),
+            ),
+            child: ValueListenableBuilder(
               /// update ui when change play status
-              valueListenable:
-                  value == null ? ValueNotifier(null) : value.updater,
+              valueListenable: controller.updater,
               builder: (context, value, child) {
                 return Row(
                   mainAxisSize: MainAxisSize.min,
@@ -160,7 +157,7 @@ class VoiceMessageView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 8),
-                          _noises(newTHeme),
+                          _noises(newTHeme, controller),
                           const SizedBox(height: 4),
                           Text(controller.remindingTime,
                               style: counterTextStyle),
@@ -172,19 +169,19 @@ class VoiceMessageView extends StatelessWidget {
                     const SizedBox(width: 12),
 
                     /// speed button
-                    _changeSpeedButton(color),
+                    _changeSpeedButton(color, controller),
 
                     ///
                     const SizedBox(width: 10),
                   ],
                 );
               },
-            );
-          }),
-    );
+            ),
+          );
+        });
   }
 
-  SizedBox _noises(ThemeData newTHeme) => SizedBox(
+  SizedBox _noises(ThemeData newTHeme, controller) => SizedBox(
         height: 30,
         width: controller.noiseWidth,
         child: Stack(
@@ -227,9 +224,12 @@ class VoiceMessageView extends StatelessWidget {
                     onChangeStart: controller.onChangeSliderStart,
                     onChanged: controller.onChanging,
                     onChangeEnd: (value) {
+                      onplay();
+
                       controller.onSeek(
                         Duration(milliseconds: value.toInt()),
                       );
+
                       controller.play();
                     },
                   ),
@@ -240,7 +240,7 @@ class VoiceMessageView extends StatelessWidget {
         ),
       );
 
-  Transform _changeSpeedButton(Color color) => Transform.translate(
+  Transform _changeSpeedButton(Color color, controller) => Transform.translate(
         offset: const Offset(0, -7),
         child: GestureDetector(
           onTap: () {
