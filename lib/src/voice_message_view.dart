@@ -21,6 +21,8 @@ class VoiceMessageView extends StatelessWidget {
       this.circlesColor = Colors.red,
       this.innerPadding = 12,
       this.cornerRadius = 20,
+      required this.valueNotifierintiController,
+      required this.onplay,
       // this.playerWidth = 170,
       this.size = 38,
       this.refreshIcon = const Icon(
@@ -57,6 +59,7 @@ class VoiceMessageView extends StatelessWidget {
 
   /// The background color of the voice message view.
   final Color backgroundColor;
+  final Function() onplay;
 
   ///
   final Color circlesColor;
@@ -99,6 +102,7 @@ class VoiceMessageView extends StatelessWidget {
 
   /// The loading Color of the play/pause button.
   final Color playPauseButtonLoadingColor;
+  final ValueNotifier<VoiceController?> valueNotifierintiController;
 
   @override
 
@@ -122,54 +126,61 @@ class VoiceMessageView extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(cornerRadius),
       ),
-      child: ValueListenableBuilder(
-        /// update ui when change play status
-        valueListenable: controller.updater,
-        builder: (context, value, child) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              /// play pause button
-              PlayPauseButton(
-                controller: controller,
-                color: color,
-                loadingColor: playPauseButtonLoadingColor,
-                size: size,
-                refreshIcon: refreshIcon,
-                pauseIcon: pauseIcon,
-                playIcon: playIcon,
-                stopDownloadingIcon: stopDownloadingIcon,
-                buttonDecoration: playPauseButtonDecoration,
-              ),
-
-              ///
-              const SizedBox(width: 10),
-
-              /// slider & noises
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      child: ValueListenableBuilder<VoiceController?>(
+          valueListenable: valueNotifierintiController,
+          builder: (context, value, child) {
+            return ValueListenableBuilder(
+              /// update ui when change play status
+              valueListenable:
+                  value == null ? ValueNotifier(null) : value.updater,
+              builder: (context, value, child) {
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(height: 8),
-                    _noises(newTHeme),
-                    const SizedBox(height: 4),
-                    Text(controller.remindingTime, style: counterTextStyle),
+                    /// play pause button
+                    PlayPauseButton(
+                      onplay: () {},
+                      controller: controller,
+                      color: color,
+                      loadingColor: playPauseButtonLoadingColor,
+                      size: size,
+                      refreshIcon: refreshIcon,
+                      pauseIcon: pauseIcon,
+                      playIcon: playIcon,
+                      stopDownloadingIcon: stopDownloadingIcon,
+                      buttonDecoration: playPauseButtonDecoration,
+                    ),
+
+                    ///
+                    const SizedBox(width: 10),
+
+                    /// slider & noises
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 8),
+                          _noises(newTHeme),
+                          const SizedBox(height: 4),
+                          Text(controller.remindingTime,
+                              style: counterTextStyle),
+                        ],
+                      ),
+                    ),
+
+                    ///
+                    const SizedBox(width: 12),
+
+                    /// speed button
+                    _changeSpeedButton(color),
+
+                    ///
+                    const SizedBox(width: 10),
                   ],
-                ),
-              ),
-
-              ///
-              const SizedBox(width: 12),
-
-              /// speed button
-              _changeSpeedButton(color),
-
-              ///
-              const SizedBox(width: 10),
-            ],
-          );
-        },
-      ),
+                );
+              },
+            );
+          }),
     );
   }
 
