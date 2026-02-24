@@ -1,6 +1,6 @@
 name: voice_message_package
 description: Flutter package to play/puase voice message in chat messengers.
-version: 2.2.3
+version: 2.2.4
 homepage: https://mehran.monster/
 
 environment:
@@ -12,11 +12,12 @@ dependencies:
     sdk: flutter
   flutter_cache_manager: ^3.4.1
   just_audio: ^0.10.5
-  syncfusion_flutter_sliders: ^31.1.23 
+  syncfusion_flutter_sliders: ^32.2.7 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.1
+
 
 
