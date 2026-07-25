@@ -197,8 +197,7 @@ class VoiceMessageView extends StatelessWidget {
                   child: Container(
                     width: controller.noiseWidth,
                     height: 6.w(),
-                    color:
-                        notActiveSliderColor ?? backgroundColor.withOpacity(.4),
+                    color: Colors.amber,
                   ),
                 );
               },
