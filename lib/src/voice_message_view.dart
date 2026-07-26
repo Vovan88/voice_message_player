@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:voice_message_package/src/helpers/play_status.dart';
 import 'package:voice_message_package/src/helpers/utils.dart';
@@ -148,7 +150,7 @@ class VoiceMessageView extends StatelessWidget {
               /// slider & noises
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 8),
                     _noises(newTHeme),
@@ -177,12 +179,18 @@ class VoiceMessageView extends StatelessWidget {
         height: 30,
         width: controller.noiseWidth,
         child: Stack(
-          alignment: Alignment.center,
+          alignment: Alignment.centerLeft,
           children: [
             /// noises
-            Noises(
-              rList: controller.randoms!,
-              activeSliderColor: activeSliderColor,
+            Positioned(
+              left: 0,
+              child: SizedBox(
+                width: controller.noiseWidth,
+                child: Noises(
+                  rList: controller.randoms!,
+                  activeSliderColor: activeSliderColor,
+                ),
+              ),
             ),
 
             /// slider
@@ -192,12 +200,18 @@ class VoiceMessageView extends StatelessWidget {
                 curve: Curves.ease,
               ),
               builder: (BuildContext context, Widget? child) {
+                final double progress = controller.animController.value;
+
+                final double currentWidth = controller.noiseWidth * progress;
+
+                log(currentWidth.toString());
                 return Positioned(
-                  left: controller.animController.value,
+                  left: 0,
                   child: Container(
-                    width: controller.noiseWidth,
+                    width: currentWidth,
                     height: 6.w(),
-                    color: Colors.amber,
+                    color:
+                        notActiveSliderColor ?? backgroundColor.withOpacity(.4),
                   ),
                 );
               },
@@ -210,6 +224,7 @@ class VoiceMessageView extends StatelessWidget {
                 child: Theme(
                   data: newTHeme,
                   child: Slider(
+                    padding: EdgeInsets.zero,
                     value: controller.currentMillSeconds,
                     max: controller.maxMillSeconds,
                     onChangeStart: controller.onChangeSliderStart,

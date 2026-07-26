@@ -14,9 +14,6 @@ dependencies:
   just_audio: ^0.10.5
   syncfusion_flutter_sliders: ^34.1.32
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutters
-  flutter_lints: ^6.0.0
+ 
 
 

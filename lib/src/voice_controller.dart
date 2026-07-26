@@ -37,7 +37,7 @@ class VoiceController extends MyTicker {
   final Function() onPlaying;
   final Function() onPause;
   final Function(Object)? onError;
-  final double noiseWidth = 50.5.w();
+  final double noiseWidth = 25.w();
   late AnimationController animController;
   final AudioPlayer _player = AudioPlayer();
   final bool isFile;
@@ -144,8 +144,8 @@ class VoiceController extends MyTicker {
     positionStream = _player.positionStream.listen((Duration p) async {
       if (!isDownloading) currentDuration = p;
 
-      final value = (noiseWidth * currentMillSeconds) / maxMillSeconds;
-      animController.value = value;
+      final value = currentMillSeconds / maxMillSeconds;
+      animController.value = value.clamp(0.0, 1.0);
       _updateUi();
       if (p.inMilliseconds >= maxMillSeconds) {
         await _player.stop();
